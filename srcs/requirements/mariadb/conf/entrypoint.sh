@@ -1,25 +1,34 @@
 #!/bin/bash
 
-# Start MariaDB in background
+# 🚀 Start MariaDB in the background using mysqld_safe (safer startup, logs to syslog)
+# ✅ Required to run the MariaDB daemon with persistent DB data from /var/lib/mysql
 mysqld_safe --datadir=/var/lib/mysql &
 
-# # Wait until MariaDB is ready
-# until mysqladmin ping --silent; do
-#   echo "⏳ Waiting for MariaDB to be ready..."
-#   sleep 2
-# done
-
+# 🔄 Wait for the MariaDB service to become available
+# ✅ This ensures WordPress (or the init script) doesn't run SQL commands before MariaDB is ready
 until mysqladmin ping -h mariadb -u $DB_USER -p$DB_PASSWORD --silent; do
   echo "⏳ Still waiting for MariaDB @ mariadb with $DB_USER/$DB_PASSWORD..."
   sleep 2
 done
 
-# Setup database and user
+# ⚙️ Setup: Create the WordPress database (if it doesn't already exist)
+# ✅ Fulfills requirement to auto-configure MariaDB without manual steps
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+
+# 👤 Create the WordPress DB user if it doesn't exist yet
+# ✅ Avoids hardcoding credentials — uses environment variables from .env
 mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';"
+
+# 🔐 Grant full permissions on the DB to the new user (WordPress requires full access)
 mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';"
+
+# 🔁 Reload privileges immediately
 mysql -u root -e "FLUSH PRIVILEGES;"
+
+# 🧩 Inject SQL file (e.g., to create a second WP user)
+# ✅ You can customize /init.sql to add a second user or other schema setup
 mysql -u root < /init.sql
 
-# Keep the DB running
+# ⏸️ Keep the MariaDB server running in the foreground
+# ✅ Prevents container from exiting immediately after script runs
 wait
