@@ -1,5 +1,5 @@
 
-```markdown
+
 # 🏗️ Inception - Docker Infrastructure Project
 
 > 42 Network DevOps Project — Secure, containerized LEMP stack with WordPress
@@ -25,18 +25,21 @@ All components must run in **isolated containers**, connected via a **custom Doc
 🌍 Browser ([https://localhost:8443](https://localhost:8443))
 │
 ▼ Port 8443 on host → Port 443 on guest VM
+
 ┌────────────┐
 │   NGINX    │ 🐳
 │ (Reverse Proxy)
 └────────────┘
 │ FastCGI 9000
 ▼
+
 ┌───────────────┐
 │  WordPress    │ 🐳
 │ (PHP-FPM)     │
 └───────────────┘
 │ TCP 3306
 ▼
+
 ┌───────────────┐
 │   MariaDB     │ 🐳
 │ (Database)    │
