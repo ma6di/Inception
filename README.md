@@ -23,15 +23,15 @@ All components run in **isolated containers**, connected via a **custom Docker n
 🌍 Browser (https://login.42.fr)
     │
     ▼ Port 443 (VM host forwarded to container)
-┌────────────┐
-│   NGINX    │ 🐳
-│ (TLS + Proxy)
-└────────────┘
+┌──────────────┐
+│   NGINX      │ 🐳
+│ (TLS + Proxy)│
+└──────────────┘
       │
       ▼ FastCGI (port 9000)
 ┌───────────────┐
 │  WordPress    │ 🐳
-│ (PHP-FPM + Redis)  
+│ (PHP-FPM )    │
 └───────────────┘
       │
       ▼ TCP (port 3306)
