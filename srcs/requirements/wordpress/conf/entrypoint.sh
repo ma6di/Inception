@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e  # ❗ Exit immediately on any error
 
+DB_PASSWORD=$(cat /run/secrets/db_password)
+WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+WP_SECONDARY_PASS=$(cat /run/secrets/wp_secondary_password)
+
+
 ### 🛠️ Wait until MariaDB is fully reachable (ping + TCP port)
 #Runs the mysqladmin utility to check if the MySQL/MariaDB server is alive.
 #ping command here sends a ping request to MariaDB server.

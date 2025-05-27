@@ -1,0 +1,60 @@
+# Node modules (if any JavaScript tools are ever used)
+node_modules
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS and editor junk
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker ignore itself
+.dockerignore
+
+# Environment/config files
+.env
+*.env
+*.bak
+*.swp
+*.swo
+
+# System logs or temp
+*.log
+tmp/
+cache/
+*.tmp
+
+# Compiled files or archives
+*.tar
+*.tar.gz
+*.zip
+*.gz
+*.tgz
+*.7z
+*.rar
+
+# WordPress unnecessary at build time (handled by wp-cli)
+wordpress/
+wp-config.php
+wp-config-sample.php
+
+# Host project build artifacts
+data/
+volume/
+*.sock
+*.pid
+
+# IDE files
+.vscode/
+.idea/
+
+# Docker volumes that should not be copied
+/home/*/data/
+
+# Optional: Exclude secrets or credentials if any
+secrets/

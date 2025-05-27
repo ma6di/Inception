@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+DB_PASSWORD=$(cat /run/secrets/db_password)
+
 # 🚀 Start MariaDB in the background using mysqld_safe (safer startup, logs to syslog)
 # ✅ Required to run the MariaDB daemon with persistent DB data from /var/lib/mysql
 mysqld_safe --datadir=/var/lib/mysql &

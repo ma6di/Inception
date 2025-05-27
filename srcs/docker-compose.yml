@@ -1,70 +1,83 @@
-version: '3.3'  # 👈 Specifies the Compose file format version (3.3 supports networks, volumes, restart policies)
+version: '3.3'
 
 services:
   mariadb:
     image: mariadb:inception
     build: 
-      context: ./requirements/mariadb   # 👈 Build MariaDB image from a local Dockerfile (✅ Must build, not pull)
+      context: ./requirements/mariadb
       dockerfile: Dockerfile
-    container_name: mariadb         # 👈 Name for easy reference/logging
-    restart: always                 # ✅ Required: container must auto-restart on crash
-    env_file: .env                  # ✅ Required: credentials must not be hardcoded, read from .env
+    container_name: mariadb
+    restart: always
+    env_file: .env  # ✅ still used for DB_NAME, DB_USER
     volumes:
-      - mariadb_data:/var/lib/mysql  # ✅ Required: persist DB data to a bind-mounted host volume
+      - mariadb_data:/var/lib/mysql
     networks:
-      - inception                    # ✅ Required: all services must share an internal network
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}  # ✅ Use environment variable from .env to pass root password securely
+      - inception
+    secrets:
+      - db_root_password
+      - db_password
+
 
   wordpress:
     image: wordpress:inception
     build:
-      context: ./requirements/wordpress # ✅ Must build from Dockerfile (no DockerHub pulls allowed)
+      context: ./requirements/wordpress
       dockerfile: Dockerfile
     container_name: wordpress
-    restart: always                 # ✅ Required restart policy
-    env_file: .env                  # ✅ Use same env file for DB access credentials
+    restart: always
+    env_file: .env
     depends_on:
-      - mariadb                    # 👈 Ensure MariaDB starts first
+      - mariadb
     volumes:
-      - wordpress_data:/var/www/html  # ✅ Required: store WordPress files in a host-mounted directory
+      - wordpress_data:/var/www/html
     networks:
-      - inception                   # ✅ Must be on the same internal Docker network
-
+      - inception
+    secrets:
+      - wp_admin_password
+      - wp_secondary_password
+      - db_password  # needed to connect to DB
 
   nginx:
     image: nginx:inception
     build:
-      context: ./requirements/nginx     # ✅ Must build your own NGINX image with SSL
+      context: ./requirements/nginx
       dockerfile: Dockerfile
     container_name: nginx
-    restart: always                 # ✅ Required: restart on crash
+    restart: always
     ports:
-      - "443:443"                  # ✅ Only port allowed: HTTPS over 443
+      - "443:443"
     depends_on:
-      - wordpress                   # 👈 Ensure WordPress is running before starting NGINX
+      - wordpress
     volumes:
-      - wordpress_data:/var/www/html  # ✅ Mount WordPress files so NGINX can serve them
+      - wordpress_data:/var/www/html
     networks:
-      - inception                   # ✅ All services must share the same Docker bridge network
+      - inception
 
-# ✅ Required volumes, bind-mounted under /home/<login>/data
 volumes:
   mariadb_data:
     driver: local
     driver_opts:
-      type: none                   # 👈 Required for bind mount
-      device: /home/login/data/mariadb  # ✅ Required mount point (host path)
+      type: none
+      device: /home/${USER}/data/mariadb  # 🔁 REPLACE with actual login if needed
       o: bind
 
   wordpress_data:
     driver: local
     driver_opts:
       type: none
-      device: /home/login/data/wordpress  # ✅ Must persist WordPress site files here
+      device: /home/${USER}/data/wordpress
       o: bind
 
-# ✅ Required internal network for inter-container communication
 networks:
   inception:
-    driver: bridge  # 👈 Default Docker bridge network for internal service communication
+    driver: bridge
+
+secrets:
+  db_root_password:
+    file: ./secrets/db_root_password
+  db_password:
+    file: ./secrets/db_password
+  wp_admin_password:
+    file: ./secrets/wp_admin_password
+  wp_secondary_password:
+    file: ./secrets/wp_secondary_password

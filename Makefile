@@ -1,6 +1,6 @@
 # Makefile for managing the Docker Compose lifecycle
 
-COMPOSE=docker-compose
+COMPOSE=docker-compose -f srcs/docker-compose.yml
 
 .PHONY: build up down restart logs clean clean_full
 
