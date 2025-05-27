@@ -118,7 +118,7 @@ WP_SECONDARY_EMAIL=editor@42.fr
 ```bash
 sudo nano /etc/hosts
 ```
-add "127.0.0.1    login.42.fr" to the hosts file and save
+Than add "127.0.0.1          login.42.fr" to the hosts file and save
 
 ---
 
