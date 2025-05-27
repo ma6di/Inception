@@ -22,7 +22,7 @@ All components must run in **isolated containers**, connected via a **custom Doc
 
 ```
 
-🌍 Browser ([https://localhost:8443](https://localhost:8443))
+🌍 Browser ([https://login.42.fr))
 │
 ▼ Port 8443 on host → Port 443 on guest VM
 
@@ -154,10 +154,7 @@ inception/
 │       ├── nginx/
 │       │   ├── Dockerfile
 │       │   └── conf/
-│       │       ├── nginx.conf
-│       │       └── ssl/
-│       │           ├── server.crt
-│       │           └── server.key
+│       │       └── nginx.conf
 └── README.md
 ```
 
