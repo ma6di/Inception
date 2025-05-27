@@ -2,7 +2,10 @@ version: '3.3'  # 👈 Specifies the Compose file format version (3.3 supports n
 
 services:
   mariadb:
-    build: ./requirements/mariadb   # 👈 Build MariaDB image from a local Dockerfile (✅ Must build, not pull)
+    image: mariadb:inception
+    build: 
+      context: ./requirements/mariadb   # 👈 Build MariaDB image from a local Dockerfile (✅ Must build, not pull)
+      dockerfile: Dockerfile
     container_name: mariadb         # 👈 Name for easy reference/logging
     restart: always                 # ✅ Required: container must auto-restart on crash
     env_file: .env                  # ✅ Required: credentials must not be hardcoded, read from .env
@@ -14,7 +17,10 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}  # ✅ Use environment variable from .env to pass root password securely
 
   wordpress:
-    build: ./requirements/wordpress # ✅ Must build from Dockerfile (no DockerHub pulls allowed)
+    image: wordpress:inception
+    build:
+      context: ./requirements/wordpress # ✅ Must build from Dockerfile (no DockerHub pulls allowed)
+      dockerfile: Dockerfile
     container_name: wordpress
     restart: always                 # ✅ Required restart policy
     env_file: .env                  # ✅ Use same env file for DB access credentials
@@ -25,8 +31,12 @@ services:
     networks:
       - inception                   # ✅ Must be on the same internal Docker network
 
+
   nginx:
-    build: ./requirements/nginx     # ✅ Must build your own NGINX image with SSL
+    image: nginx:inception
+    build:
+      context: ./requirements/nginx     # ✅ Must build your own NGINX image with SSL
+      dockerfile: Dockerfile
     container_name: nginx
     restart: always                 # ✅ Required: restart on crash
     ports:
@@ -44,14 +54,14 @@ volumes:
     driver: local
     driver_opts:
       type: none                   # 👈 Required for bind mount
-      device: /home/mcheragh/data/mariadb  # ✅ Required mount point (host path)
+      device: /home/login/data/mariadb  # ✅ Required mount point (host path)
       o: bind
 
   wordpress_data:
     driver: local
     driver_opts:
       type: none
-      device: /home/mcheragh/data/wordpress  # ✅ Must persist WordPress site files here
+      device: /home/login/data/wordpress  # ✅ Must persist WordPress site files here
       o: bind
 
 # ✅ Required internal network for inter-container communication

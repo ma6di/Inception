@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # 🚀 Start MariaDB in the background using mysqld_safe (safer startup, logs to syslog)
 # ✅ Required to run the MariaDB daemon with persistent DB data from /var/lib/mysql

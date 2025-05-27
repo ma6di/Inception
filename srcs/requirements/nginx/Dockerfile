@@ -11,16 +11,15 @@ RUN apt-get update && \
 # 📥 Copy your custom NGINX config into the container
 # ✅ Needed to define HTTPS server, TLS protocols, and reverse proxy to WordPress
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./conf/generate-ssl.sh /generate-ssl.sh
 
-# 🔐 Copy SSL certificate and private key into the container
-# ✅ Required: the project must serve WordPress over HTTPS with TLSv1.2 or TLSv1.3
-COPY ./conf/ssl/server.crt /etc/ssl/certs/server.crt
-COPY ./conf/ssl/server.key /etc/ssl/private/server.key
+RUN chmod +x /generate-ssl.sh
 
 # 🌐 Expose port 443 for secure HTTPS traffic
 # ✅ This is the **only** public-facing port allowed in the project
 EXPOSE 443
 
+RUN ./generate-ssl.sh
 # 🚀 Run NGINX in the foreground
 # ✅ Required: keeps container alive, and ensures it acts as the only entry point
 CMD ["nginx", "-g", "daemon off;"]

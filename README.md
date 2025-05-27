@@ -147,7 +147,7 @@ https://localhost:8443
 ```
 
 - **From inside the VM:**
-> This works because inside the VM, the `nginx` container listens on port 443 and `mcheragh.42.fr` is mapped via `/etc/hosts` to `127.0.0.1`.
+> This works because inside the VM, the `nginx` container listens on port 443 and `.42.fr` is mapped via `/etc/hosts` to `127.0.0.1`.
 
 ```
 https://username.42.fr

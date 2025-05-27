@@ -1,26 +1,49 @@
 # Use a minimal Debian base image for smaller size and security
 FROM debian:bullseye-slim
 
-# Update package lists and install PHP, PHP-FPM, MySQL client, wget, unzip, curl, and other dependencies
-# 'default-mysql-client' is needed to interact with the MySQL database from the container
+# 🛠️ Update the package list and install necessary PHP components and tools
 RUN apt-get update && \
-    apt-get install -y php php-fpm php-mysql wget unzip curl default-mysql-client && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    # Core PHP interpreter
+    apt-get install -y php && \
+    # PHP FastCGI Process Manager (required to serve WordPress via NGINX)
+    apt-get install -y php-fpm && \
+    # PHP MySQL driver so WordPress can talk to MariaDB
+    apt-get install -y php-mysql && \
+    # cURL for downloading files like WP-CLI or WordPress
+    apt-get install -y curl && \
+    # Netcat used in startup scripts to wait for DB availability
+    apt-get install -y netcat && \
+    # MySQL client for debugging DB connections (optional)
+    apt-get install -y default-mysql-client && \
+    # Clean up APT cache to reduce final image size
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    # Configure PHP-FPM to listen on TCP port 9000 instead of default Unix socket
+    sed -i 's|listen = .*|listen = 0.0.0.0:9000|' /etc/php/7.4/fpm/pool.d/www.conf
 
-# Create the directory where WordPress files will live, ensure it exists
+    # Create the directory where WordPress files will live, ensure it exists
 RUN mkdir -p /var/www/html
 
-# Configure PHP-FPM to listen on all network interfaces on port 9000
-# This allows the web server (e.g., Nginx) to communicate with PHP-FPM via TCP socket
-RUN sed -i 's|listen = .*|listen = 0.0.0.0:9000|' /etc/php/7.4/fpm/pool.d/www.conf
+# 📥 Download the official WP-CLI Phar (PHP Archive) from GitHub
+# ✅ WP-CLI is the command-line tool to manage WordPress (install, configure, manage users, etc.)
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    # 🔐 Make the file executable so it can be run directly from the shell
+    chmod +x wp-cli.phar && \
+    # 🚀 Move the executable to a directory in the system PATH so it can be used like any command (e.g., `wp`)
+    mv wp-cli.phar /usr/local/bin/wp
 
-# Download the latest WordPress package from the official source,
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
+
+# Download the WordPress 6.5.3 version package from the official source,
 # extract it, remove the archive to save space,
 # move WordPress files to /var/www/html, which is the web root,
 # and set ownership to www-data (the default PHP-FPM user) for correct permissions
-RUN curl -O https://wordpress.org/latest.tar.gz && \
-    tar -xzf latest.tar.gz && \
-    rm latest.tar.gz && \
+ENV WP_VERSION=6.5.3
+
+RUN curl -O https://wordpress.org/wordpress-${WP_VERSION}.tar.gz && \
+    tar -xzf wordpress-${WP_VERSION}.tar.gz && \
+    rm wordpress-${WP_VERSION}.tar.gz && \
     mv wordpress/* /var/www/html/ && \
     chown -R www-data:www-data /var/www/html
 
