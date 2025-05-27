@@ -86,12 +86,22 @@ cd inception
 Create a `.env` file in the project root:
 
 ```dotenv
-LOGIN=username
-DOMAIN=username.42.fr
-DB_NAME=wordpress
-DB_USER=wp_user
-DB_PASSWORD=wp_pass
-DB_ROOT_PASSWORD=superroot
+DB_NAME=
+DB_USER=w
+DB_PASSWORD=
+DB_ROOT_PASSWORD=
+
+# WordPress site
+DOMAIN=login.42.fr
+WP_TITLE=
+WP_ADMIN=
+WP_ADMIN_PASSWORD=
+WP_ADMIN_EMAIL=
+
+# Second user
+WP_SECONDARY=
+WP_SECONDARY_PASS=
+WP_SECONDARY_EMAIL=
 ```
 
 ---
