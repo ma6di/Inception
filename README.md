@@ -106,36 +106,7 @@ WP_SECONDARY_EMAIL=
 
 ---
 
-### 3. 🛠️ Configure VM Port Forwarding (📦 VirtualBox / UTM)
-
-Forward host port `8443` to guest port `443` (used by NGINX container):
-
-#### VirtualBox:
-
-* Open VM settings → Network → Advanced → Port Forwarding
-* Add:
-
-  ```
-  Name: https
-  Protocol: TCP
-  Host Port: 8443
-  Guest Port: 443
-  ```
-
-#### UTM:
-
-* Open VM config → Network → Port Forwarding
-* Add rule:
-
-  ```
-  Host Port: 8443
-  Guest Port: 443
-  Protocol: TCP
-  ```
-
----
-
-### 4. ▶️ Run the Project
+### 3. ▶️ Run the Project
 
 Use the included Makefile:
 
@@ -147,21 +118,15 @@ make
 
 ---
 
-### 5. 🌐 Access the Site
-
-- **From the host OS (e.g., Ubuntu):**
-> This works because you've set up port forwarding from host `8443` → guest `443`.
-
-```
-https://localhost:8443
-```
+### 4. 🌐 Access the Site
 
 - **From inside the VM:**
-> This works because inside the VM, the `nginx` container listens on port 443 and `.42.fr` is mapped via `/etc/hosts` to `127.0.0.1`.
+```
+https://login.42.fr
+```
 
-```
-https://username.42.fr
-```
+> This works because inside the VM, the `nginx` container listens on port 443 and `.42.fr` is mapped via `/etc/hosts` to `127.0.0.1`.
+`
 
 > Accept the self-signed certificate warning.
 > You should now see the WordPress setup screen.
@@ -200,7 +165,7 @@ inception/
 
 ## 🔄 Project Flow Summary
 
-1. Browser connects to `https://localhost:8443`
+1. Browser connects to `https://mcheragh.42.fr`
 2. Host forwards traffic to port 443 inside the VM
 3. NGINX container receives the TLS request
 4. NGINX forwards PHP requests to WordPress container (via FastCGI port 9000)
