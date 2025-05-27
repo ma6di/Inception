@@ -24,7 +24,7 @@ All components must run in **isolated containers**, connected via a **custom Doc
 
 🌍 Browser ([https://login.42.fr))
 │
-▼ Port 8443 on host → Port 443 on guest VM
+▼ Port 443 on VM
 
 ┌────────────┐
 │   NGINX    │ 🐳
