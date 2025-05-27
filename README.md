@@ -87,7 +87,7 @@ Create a `.env` file in the project root:
 
 ```dotenv
 DB_NAME=
-DB_USER=w
+DB_USER=
 DB_PASSWORD=
 DB_ROOT_PASSWORD=
 
@@ -162,7 +162,7 @@ inception/
 
 ## 🔄 Project Flow Summary
 
-1. Browser connects to `https://mcheragh.42.fr`
+1. Browser connects to `https://login.42.fr`
 2. Host forwards traffic to port 443 inside the VM
 3. NGINX container receives the TLS request
 4. NGINX forwards PHP requests to WordPress container (via FastCGI port 9000)
