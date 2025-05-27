@@ -1,5 +1,4 @@
 
-
 # 🏗️ Inception - Docker Infrastructure Project
 
 > 42 Network DevOps Project — Secure, containerized LEMP stack with WordPress
@@ -10,162 +9,163 @@
 
 Inception is a system administration and Docker orchestration project. The goal is to **set up a secure, Docker-based infrastructure** that runs:
 
-- A web server (NGINX)
-- A PHP-based website (WordPress)
-- A relational database (MariaDB)
+* A web server (**NGINX**)
+* A PHP-based website (**WordPress**)
+* A relational database (**MariaDB**)
 
-All components must run in **isolated containers**, connected via a **custom Docker network**, with **data persisting through bind-mounted volumes**.
+All components run in **isolated containers**, connected via a **custom Docker network**, with **data persisting through bind-mounted volumes** and **sensitive credentials stored using Docker secrets**.
 
 ---
 
 ## 🧱 Architecture Overview
 
 ```
-
-🌍 Browser ([https://login.42.fr))
-│
-▼ Port 443 on VM
-
+🌍 Browser (https://login.42.fr)
+    │
+    ▼ Port 443 (VM host forwarded to container)
 ┌────────────┐
 │   NGINX    │ 🐳
-│ (Reverse Proxy)
+│ (TLS + Proxy)
 └────────────┘
-│ FastCGI 9000
-▼
-
+      │
+      ▼ FastCGI (port 9000)
 ┌───────────────┐
 │  WordPress    │ 🐳
-│ (PHP-FPM)     │
+│ (PHP-FPM + Redis)  
 └───────────────┘
-│ TCP 3306
-▼
-
+      │
+      ▼ TCP (port 3306)
 ┌───────────────┐
 │   MariaDB     │ 🐳
 │ (Database)    │
 └───────────────┘
 
+🔐 Secrets:
+- /run/secrets/db_password
+- /run/secrets/db_root_password
+- /run/secrets/wp_admin_password
+- /run/secrets/wp_secondary_password
+
 🔗 Docker network: `inception`
 
 📦 Volumes:
-
-* /home/username/data/wordpress ←→ /var/www/html
-* /home/username/data/mariadb   ←→ /var/lib/mysql
-
-````
+- /home/<user>/data/wordpress ←→ /var/www/html
+- /home/<user>/data/mariadb   ←→ /var/lib/mysql
+```
 
 ---
 
 ## ✅ Project Requirements Covered
 
-- ✔️ Containers built from scratch (no prebuilt DockerHub images)
-- ✔️ HTTPS access via TLSv1.2 or TLSv1.3
-- ✔️ `.env` file for secrets and configs
-- ✔️ Persistent storage via bind-mounted volumes
-- ✔️ Custom Docker bridge network
-- ✔️ Auto-restart of containers on crash
-- ✔️ No credentials hardcoded
-- ✔️ No DNS modification (`/etc/hosts`)
-- ✔️ All traffic flows through NGINX only
+* ✔️ All containers built from scratch (no DockerHub pulls)
+* ✔️ All traffic secured via HTTPS (TLSv1.2 or TLSv1.3)
+* ✔️ `.env` used for non-sensitive configs
+* ✔️ 🔐 **Docker secrets** used for all sensitive data (passwords)
+* ✔️ Persistent volumes for MariaDB and WordPress
+* ✔️ Custom internal Docker network
+* ✔️ Auto-restart policies for resilience
+* ✔️ No `/etc/hosts` editing required
+* ✔️ NGINX is the only exposed entry point (port 443)
 
 ---
 
 ## ⚙️ How to Use
 
-### 1. 📁 Clone the repo
+### 1. 📁 Clone the repository
 
 ```bash
 git clone https://github.com/yourusername/inception.git
 cd inception
-````
-
----
-
-### 2. 🔧 Configure environment
-
-Create a `.env` file in the project root:
-
-```dotenv
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-DB_ROOT_PASSWORD=
-
-# WordPress site
-DOMAIN=login.42.fr
-WP_TITLE=
-WP_ADMIN=
-WP_ADMIN_PASSWORD=
-WP_ADMIN_EMAIL=
-
-# Second user
-WP_SECONDARY=
-WP_SECONDARY_PASS=
-WP_SECONDARY_EMAIL=
 ```
 
 ---
 
-### 3. ▶️ Run the Project
+### 2. 🔐 Set up secrets
 
-Use the included Makefile:
+Create a `secrets/` folder and place one file per secret:
 
 ```bash
-make
+mkdir -p secrets
+
+echo "superroot"         > secrets/db_root_password
+echo "wp_pass"           > secrets/db_password
+echo "superadminpass"    > secrets/wp_admin_password
+echo "editoruserpass"    > secrets/wp_secondary_password
 ```
 
-(Internally runs `docker compose up --build`.)
+✅ Ensure `secrets/` is **ignored in Git** using `.gitignore`.
 
 ---
 
-### 4. 🌐 Access the Site
+### 3. ⚙️ Create your `.env`
 
-- **From inside the VM:**
+```dotenv
+# WordPress DB (non-sensitive)
+DB_NAME=wordpress
+DB_USER=wp_user
+
+# Site config
+DOMAIN=login.42.fr
+WP_TITLE=InceptionSite
+WP_ADMIN=admin42
+WP_ADMIN_EMAIL=admin@42.fr
+WP_SECONDARY=editor42
+WP_SECONDARY_EMAIL=editor@42.fr
 ```
-https://login.42.fr
+
+---
+### 6. configure your domain name to point to your local IP address.
+```bash
+sudo nano /etc/hosts
 ```
 
-> This works because inside the VM, the `nginx` container listens on port 443 and `.42.fr` is mapped via `/etc/hosts` to `127.0.0.1`.
-`
+add "127.0.0.1    login.42.fr" to the hosts file and save
+---
 
-> Accept the self-signed certificate warning.
-> You should now see the WordPress setup screen.
+### 5. ▶️ Build & Run
+
+```bash
+make build
+make up
+```
 
 ---
 
-## 📂 Project Structure
+### 6. 🌐 Access Your WordPress Site
+
+From the VM or forwarded host:
+
+```bash
+https://login.42.fr      # Inside VM
+```
+🔐 Accept the self-signed TLS certificate warning in the browser.
+
+---
+
+## 📁 Project Structure
 
 ```
 inception/
 ├── Makefile
 ├── .env
 ├── docker-compose.yml
+├── secrets/               ← DO NOT TRACK IN GIT
+│   ├── db_root_password
+│   ├── db_password
+│   ├── wp_admin_password
+│   └── wp_secondary_password
 ├── srcs/
 │   └── requirements/
 │       ├── mariadb/
 │       │   ├── Dockerfile
 │       │   └── conf/
-│       │       ├── entrypoint.sh
-│       │       └── init.sql
 │       ├── wordpress/
 │       │   ├── Dockerfile
 │       │   └── conf/
-│       │       └── entrypoint.sh
 │       ├── nginx/
 │       │   ├── Dockerfile
 │       │   └── conf/
-│       │       └── nginx.conf
 └── README.md
 ```
 
----
-
-## 🔄 Project Flow Summary
-
-1. Browser connects to `https://login.42.fr`
-2. Host forwards traffic to port 443 inside the VM
-3. NGINX container receives the TLS request
-4. NGINX forwards PHP requests to WordPress container (via FastCGI port 9000)
-5. WordPress runs PHP, connects to MariaDB (port 3306), and renders HTML
-6. Response goes back to NGINX → sent to browser
 
