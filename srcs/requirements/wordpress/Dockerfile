@@ -47,9 +47,6 @@ RUN curl -O https://wordpress.org/wordpress-${WP_VERSION}.tar.gz && \
     mv wordpress/* /var/www/html/ && \
     chown -R www-data:www-data /var/www/html
 
-# Copy the initial SQL setup file to the container root for later initialization of the database schema and data
-COPY ./conf/init.sql /init.sql
-
 # Copy the entrypoint script that will run when the container starts
 # This script typically initializes the database, starts PHP-FPM, or performs other startup tasks
 COPY ./conf/entrypoint.sh /entrypoint.sh

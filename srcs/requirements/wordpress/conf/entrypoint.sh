@@ -75,7 +75,6 @@ if ! wp core is-installed --allow-root; then
     --allow-root
 
   ### ⚠️ Secondary user creation
-  # Only needed if NOT already injected via init.sql
   # Comment out the block below if you're handling user creation via SQL
   echo "👤 Creating secondary user via wp-cli..."
   wp user create \

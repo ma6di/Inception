@@ -28,9 +28,6 @@ mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';"
 # 🔁 Reload privileges immediately
 mysql -u root -e "FLUSH PRIVILEGES;"
 
-# 🧩 Inject SQL file (e.g., to create a second WP user)
-# ✅ You can customize /init.sql to add a second user or other schema setup
-mysql -u root < /init.sql
 
 # ⏸️ Keep the MariaDB server running in the foreground
 # ✅ Prevents container from exiting immediately after script runs

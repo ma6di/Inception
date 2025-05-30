@@ -15,9 +15,6 @@ RUN sed -i 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d
 # 📥 Copy the custom entrypoint script that will configure the DB at container startup
 COPY ./conf/entrypoint.sh /entrypoint.sh
 
-# 📥 Copy the SQL script used to create the DB, users, and optionally a second WordPress user
-COPY ./conf/init.sql /init.sql
-
 # 🔐 Make the entrypoint script executable
 RUN chmod +x /entrypoint.sh
 

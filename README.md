@@ -101,16 +101,16 @@ echo "editoruserpass"    > secrets/wp_secondary_password
 
 ```dotenv
 # WordPress DB (non-sensitive)
-DB_NAME=wordpress
-DB_USER=wp_user
+DB_NAME=
+DB_USER=
 
 # Site config
 DOMAIN=login.42.fr
-WP_TITLE=InceptionSite
-WP_ADMIN=admin42
-WP_ADMIN_EMAIL=admin@42.fr
-WP_SECONDARY=editor42
-WP_SECONDARY_EMAIL=editor@42.fr
+WP_TITLE=
+WP_ADMIN=
+WP_ADMIN_EMAIL=
+WP_SECONDARY=
+WP_SECONDARY_EMAIL=
 ```
 
 ---

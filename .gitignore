@@ -1,0 +1,22 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+
+# Ignore editor/IDE configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore build artifacts (just in case)
+*.tar.gz
+*.zip
+
+# Ignore Docker cache files
+**/__pycache__/
+**/*.pyc
